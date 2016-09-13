@@ -1,4 +1,6 @@
-import { betweenTrials, omission, intrusion } from './score';
+import Score from './score';
+
+const score = new Score();
 
 const response = [
     [11,  1,  5,  2, 99],
@@ -20,20 +22,47 @@ it('computes between trial errors', () => {
         [1, 1, 0, 0, 0],
         [0, 0, 1, 0, 1],
     ];
-    const errors = betweenTrials(response);
+    const errors = score.betweenTrial(response);
+    expect(errors).toEqual(expected);
+});
+
+it('computes omission errors', () => {
+    const expected = [
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+    ];
+    const errors = score.omission(response);
     expect(errors).toEqual(expected);
 });
 
 it('computes intrusion errors', () => {
     const expected = [
-        [0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0], [0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0],
         [0, 0, 1, 0, 0],
         [0, 0, 0, 0, 0],
         [0, 0, 0, 1, 0],
     ];
-    const errors = intrusion(response);
+    const errors = score.intrusion(response);
+    expect(errors).toEqual(expected);
+});
+
+it('computes within trial errors', () => {
+    const expected = [
+        [0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 1],
+        [0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0],
+    ];
+    const errors = score.withinTrial(response);
     expect(errors).toEqual(expected);
 });

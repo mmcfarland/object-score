@@ -1,7 +1,5 @@
 import Score from './score';
 
-const score = new Score();
-
 const response = [
     [11,  1,  5,  2, 99],
     [3 ,  2, 15, 10, 99],
@@ -22,7 +20,7 @@ it('computes between trial errors', () => {
         [1, 1, 0, 0, 0],
         [0, 0, 1, 0, 1],
     ];
-    const errors = score.betweenTrial(response);
+    const errors = new Score(response).betweenTrial();
     expect(errors).toEqual(expected);
 });
 
@@ -36,20 +34,21 @@ it('computes omission errors', () => {
         [0, 0, 0, 0],
         [0, 0, 0, 0],
     ];
-    const errors = score.omission(response);
+    const errors = new Score(response).omission();
     expect(errors).toEqual(expected);
 });
 
 it('computes intrusion errors', () => {
     const expected = [
-        [0, 0, 0, 0, 0], [0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0],
         [0, 0, 1, 0, 0],
         [0, 0, 0, 0, 0],
         [0, 0, 0, 1, 0],
     ];
-    const errors = score.intrusion(response);
+    const errors = new Score(response).intrusion();
     expect(errors).toEqual(expected);
 });
 
@@ -63,6 +62,51 @@ it('computes within trial errors', () => {
         [0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0],
     ];
-    const errors = score.withinTrial(response);
+    const errors = new Score(response).withinTrial();
+    expect(errors).toEqual(expected);
+});
+
+it('computes within trial but not transposition errors', () => {
+    //      correct = [ 9,  1, 13, 10],
+    const smallResp = [[13, 1, 9, 9]];
+    const expected = [[0, 0, 0, 1]];
+
+    const errors = new Score(smallResp).withinTrial();
+    expect(errors).toEqual(expected);
+});
+
+it('computes within trial but not transposition errors 2', () => {
+    //      correct = [ 9,  1, 13, 10],
+    const smallResp = [[13, 13, 9, 10]];
+    const expected = [[0, 1, 0, 0]];
+
+    const errors = new Score(smallResp).withinTrial();
+    expect(errors).toEqual(expected);
+});
+
+it('computes transposition errors', () => {
+    //       correct =  [9, 1, 13, 10],
+    const smallResp = [[13, 1, 9, 10]];
+    const expected = [[1, 0, 1, 0]];
+
+    const errors = new Score(smallResp).transposition();
+    expect(errors).toEqual(expected);
+});
+
+it('computes transposition and not within trial errors', () => {
+    // correct =  [9, 1, 13, 10],
+    const smallResp = [[13, 1, 9, 13]];
+    const expected = [[1, 0, 1, 0]];
+
+    const errors = new Score(smallResp).transposition();
+    expect(errors).toEqual(expected);
+});
+
+it('computes transposition and not within trial errors 2', () => {
+    //       correct =  [9, 1, 13, 10],
+    const smallResp = [[13, 13, 9, 10]];
+    const expected = [[1, 0, 1, 0]];
+
+    const errors = new Score(smallResp).transposition();
     expect(errors).toEqual(expected);
 });

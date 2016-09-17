@@ -1,3 +1,5 @@
+import 'babel-polyfill';
+
 const correct = [
     [ 9,   1, 13, 10],
     [ 3,   2,  7, 11],
@@ -12,43 +14,83 @@ const correct = [
 const EXTRA = 4
 
 export default class Score {
-    betweenTrial(responseSet) {
+    constructor(responseSet) {
+        this.responseSet = responseSet;
+    }
+
+    betweenTrial() {
         const errors = [99, 16]
 
-        return responseSet.map((row, rowIdx) => {
+        return this.responseSet.map((row, rowIdx) => {
             const acceptable = correct[rowIdx].concat(errors);
             return row.map(response =>
-                acceptable.indexOf(response) > -1 ? 0 : 1
+                acceptable.includes(response) ? 0 : 1
             )
         });
     }
 
-    omission(responseSet) {
+    omission() {
         // Drop all omissions based on "extra", which aren't included
         // in the results
-        return responseSet.map((responseRow, rowIdx) =>
+        return this.responseSet.map((responseRow, rowIdx) =>
             responseRow
                 .map(response => response === 99 ? 1 : 0)
                 .slice(0, EXTRA)
         );
     }
 
-    intrusion(responseSet) {
-        return responseSet.map((responseRow, rowIdx) =>
+    intrusion() {
+        return this.responseSet.map((responseRow, rowIdx) =>
             responseRow
                 .map(response => response === 16 ? 1 : 0)
         );
     }
 
-    withinTrial(responseSet) {
+    /* TODO: is this no longer valid?
+    withinTrial_Old() {
         return responseSet.map((responseRow, rowIdx) =>
             responseRow.map((response, cellIdx) => {
                 if (cellIdx === 0) {
                     return 0;
                 }
-                const withinList = correct[rowIdx].splice(0, cellIdx - 1)
-                return withinList.indexOf(response) > -1 ? 1 : 0;
+                // Within the correct list, up to the point of the position
+                const withinList = correct[rowIdx].slice(0, cellIdx)
+                return withinList.includes(response) ? 1 : 0;
             })
-        )
+        );
     }
+    */
+
+    withinTrial() {
+        // Response was incorrect, it does appear in the correct series
+        // but and there is a response prior to this position.
+        return this.positionalSwap('withinTrial');
+    }
+
+    transposition() {
+        // Response was incorrect, it does appear in the correct series
+        // but not as a response prior to this position.
+        return this.positionalSwap('transposition');
+    }
+
+    positionalSwap(mode) {
+        return this.responseSet.map((responseRow, rowIdx) =>
+            responseRow.map((response, cellIdx) => {
+                const correctRow = correct[rowIdx];
+                if (response !== correctRow[cellIdx]) {
+                    const included = correctRow.includes(response);
+                    const prior = responseRow.slice(0, cellIdx).includes(response);
+
+                    if (included && (
+                            (mode === 'transposition' && !prior) ||
+                            (mode === 'withinTrial' && prior))) {
+                        return 1;
+                    }
+
+                }
+                return 0;
+            })
+        );
+
+    };
 }

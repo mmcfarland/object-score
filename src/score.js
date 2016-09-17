@@ -1,5 +1,8 @@
 import 'babel-polyfill';
 
+import { matrixSum, matrixSumByCol } from './util';
+
+
 const correct = [
     [ 9,   1, 13, 10],
     [ 3,   2,  7, 11],
@@ -92,5 +95,50 @@ export default class Score {
             })
         );
 
-    };
+    }
+
+    transpositionGradient() {
+        const transpo = this.transposition();
+        return transpo.map((errorRow, rowIdx) =>
+            errorRow.map((error, cellIdx) => {
+                if (error) {
+                    const respValue = this.responseSet[rowIdx][cellIdx];
+                    const correctRespIdx = correct[rowIdx].indexOf(respValue);
+                    return cellIdx - correctRespIdx;
+                }
+                return 0;
+            })
+        );
+    }
+
+    asVariables() {
+        const bt = this.betweenTrial();
+        const om = this.omission();
+        const intr = this.intrusion();
+        const within = this.withinTrial();
+        const transpo = this.transposition();
+
+        return {
+            between: {
+                sum: matrixSum(bt),
+                counts: matrixSumByCol(bt)
+            },
+            omission: {
+                sum: matrixSum(om),
+                counts: matrixSumByCol(om)
+            },
+            intrusion: {
+                sum: matrixSum(intr),
+                counts: matrixSumByCol(intr)
+            },
+            within: {
+                sum: matrixSum(within),
+                counts: matrixSumByCol(within)
+            },
+            transposition: {
+                sum: matrixSum(transpo),
+                counts: matrixSumByCol(transpo)
+            },
+        };
+    }
 }

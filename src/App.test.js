@@ -110,3 +110,28 @@ it('computes transposition and not within trial errors 2', () => {
     const errors = new Score(smallResp).transposition();
     expect(errors).toEqual(expected);
 });
+
+it('computes transposition gradient', () => {
+    //       correct =  [9, 1, 13, 10],
+    const smallResp = [[13, 13, 9, 10]];
+    //       errors  = [[1, 0, 1, 0]];
+    const expected = [[-2, 0, 2, 0]];
+
+    const errors = new Score(smallResp).transpositionGradient();
+    expect(errors).toEqual(expected);
+});
+
+it('computes transposition gradient 2', () => {
+    //       correct =  [9, 1, 13, 10],
+    const smallResp = [[10, 9, 1, 10]];
+    //       errors  = [[1, 1, 1, 0]];
+    const expected = [[-3, 1, 1, 0]];
+
+    const errors = new Score(smallResp).transpositionGradient();
+    expect(errors).toEqual(expected);
+});
+
+it('produces variable mappings', () => {
+    const vars = new Score(response).asVariables();
+    console.log(vars);
+});

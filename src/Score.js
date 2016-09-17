@@ -1,6 +1,6 @@
 import 'babel-polyfill';
 
-import { matrixSum, matrixSumByCol } from './util';
+import { matrixSum, matrixSumByCol, frequencyCount } from './util';
 
 
 const correct = [
@@ -48,21 +48,6 @@ export default class Score {
                 .map(response => response === 16 ? 1 : 0)
         );
     }
-
-    /* TODO: is this no longer valid?
-    withinTrial_Old() {
-        return responseSet.map((responseRow, rowIdx) =>
-            responseRow.map((response, cellIdx) => {
-                if (cellIdx === 0) {
-                    return 0;
-                }
-                // Within the correct list, up to the point of the position
-                const withinList = correct[rowIdx].slice(0, cellIdx)
-                return withinList.includes(response) ? 1 : 0;
-            })
-        );
-    }
-    */
 
     withinTrial() {
         // Response was incorrect, it does appear in the correct series
@@ -139,6 +124,7 @@ export default class Score {
                 sum: matrixSum(transpo),
                 counts: matrixSumByCol(transpo)
             },
+            transpositionGradiants: frequencyCount(transpo)
         };
     }
 }

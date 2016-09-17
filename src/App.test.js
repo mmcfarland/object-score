@@ -1,4 +1,4 @@
-import Score from './score';
+import Score from './Score';
 
 const response = [
     [11,  1,  5,  2, 99],
@@ -129,9 +129,4 @@ it('computes transposition gradient 2', () => {
 
     const errors = new Score(smallResp).transpositionGradient();
     expect(errors).toEqual(expected);
-});
-
-it('produces variable mappings', () => {
-    const vars = new Score(response).asVariables();
-    console.log(vars);
 });

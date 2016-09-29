@@ -2,62 +2,39 @@ import React, { Component } from 'react';
 
 
 export default class Row extends Component{
-    constructor() {
-        super();
-        this.state = {
-            cell1: '', 
-            cell2: '', 
-            cell3: '', 
-            cell4: '', 
-            cell5: '', 
-        };
+    constructor(props) {
+        super(props);
         this.addResponse = this.addResponse.bind(this);
     }
 
     addResponse(idx, event) {
         const val = Number(event.target.value);
-        this.setState({ [`cell${idx}`]: val }, () =>
-            this.props.onChange(this.state)
-        );
-        console.log(idx, event.target.value);
+        this.props.onChange([this.props.rowNum, idx, val])
     }
 
     render() {
+        const response = this.props.responses;
+        const inputs = response.map((cell, idx) =>
+            <input
+                key={`cell-${idx}`}
+                value={cell || ''}
+                onChange={this.addResponse.bind(this.addResponse, idx)}
+                type="number"
+                min="0"
+                max="99"
+                required
+            />
+        );
         return (
             <tr>
                 <td>
-                    <span>{this.props.rowNum}</span>
+                    <span>{this.props.rowNum + 1}:</span>
                 </td>
 
                 <td>
-                    <input 
-                        type="number" 
-                        value={this.state.cell1}
-                        onChange={this.addResponse.bind(this.addResponse, 1)}
-                    />
-                    <input 
-                        type="number" 
-                        value={this.state.cell2}
-                        onChange={this.addResponse.bind(this.addResponse, 2)}
-                    />
-                    <input 
-                        type="number" 
-                        value={this.state.cell3}
-                        onChange={this.addResponse.bind(this.addResponse, 3)}
-                    />
-                    <input 
-                        type="number" 
-                        value={this.state.cell4}
-                        onChange={this.addResponse.bind(this.addResponse, 4)}
-                    />
-                    <input 
-                        type="number" 
-                        value={this.state.cell5}
-                        onChange={this.addResponse.bind(this.addResponse, 5)}
-                    />
+                    {inputs}
                 </td>
             </tr>
         )
     }
-
 }

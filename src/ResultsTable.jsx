@@ -8,7 +8,7 @@ export default class ResultsTable extends Component {
     }
 
     onClick(idx) {
-        return () => this.props.onSelect(this.props.responses[idx])
+        return () => this.props.onSelect(idx);
     }
 
     render() {
@@ -21,7 +21,7 @@ export default class ResultsTable extends Component {
 
                     <td>{response.subject}</td>
                     <td>{response.group}</td>
-                    <td>{response.responses}</td>
+                    <td>{response.responseSet}</td>
                 </tr>
             );
         });

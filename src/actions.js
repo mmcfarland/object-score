@@ -40,9 +40,9 @@ export function clearCurrentEntry() {
     };
 }
 
-export function setCurrentEntry(entry) {
+export function setCurrentEntry(idx) {
     return {
-        type: SAVE_CURRENT_ENTRY,
-        entry,
+        type: SET_CURRENT_ENTRY,
+        idx,
     };
 }

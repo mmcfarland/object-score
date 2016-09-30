@@ -1,8 +1,10 @@
 import { combineReducers } from 'redux';
+import { cloneDeep } from 'lodash';
 import { SET_CURRENT_RESPONSE, CLEAR_CURRENT_ENTRY, SET_CURRENT_ENTRY,
          SET_CURRENT_SUBJECT, SET_CURRENT_GROUP, SAVE_CURRENT_ENTRY }
        from './actions.js';
 
+const savedResponses = JSON.parse(localStorage.getItem('responses'));
 const initResponseState = {
     group: 'X',
     subject: '',
@@ -15,14 +17,12 @@ const initResponseState = {
         [0,0,0,0,0],
         [0,0,0,0,0]
     ],
+    responseEntries: savedResponses || [],
+    isEditing: false,
+    editingIdx: -1,
 };
 
-const savedResponses = JSON.parse(localStorage.getItem('responses'));
-const initResults = {
-    responseEntries: savedResponses || [],
-}
-
-export function response(state = initResponseState, action) {
+export function response(state = cloneDeep(initResponseState), action) {
     switch (action.type) {
         case SET_CURRENT_RESPONSE:
             return Object.assign({}, state, {
@@ -36,16 +36,34 @@ export function response(state = initResponseState, action) {
             return Object.assign({}, state, {
                 subject: action.subject.target.value,
             })
-        default:
-            return state;
-    }
-}
+        case SAVE_CURRENT_ENTRY:
+            const existingEntries = cloneDeep(state.responseEntries);
+            if (state.isEditing) {
+                existingEntries[state.editingIdx] = action.entry;
+            } else {
+                existingEntries.push(action.entry);
+            }
 
-export function results(state = initResults, action) {
-    switch (action.type) {
-        case SET_CURRENT_RESPONSE:
             return Object.assign({}, state, {
-                responseSet: action.responseSet,
+                responseEntries: existingEntries,
+                isEditing: false,
+            });
+        case CLEAR_CURRENT_ENTRY:
+            const empty = cloneDeep(initResponseState);
+            return Object.assign({}, state, {
+                group: empty.group,
+                subject: empty.subject,
+                responseSet: empty.responseSet,
+            });
+        case SET_CURRENT_ENTRY:
+            const editingEntry = cloneDeep(state.responseEntries[action.idx]);
+
+            return Object.assign({}, state, {
+                group: editingEntry.group,
+                subject: editingEntry.subject,
+                responseSet: editingEntry.responseSet,
+                isEditing: true,
+                editingIdx: action.idx,
             });
         default:
             return state;
@@ -54,5 +72,4 @@ export function results(state = initResults, action) {
 
 export const mainReducer = combineReducers({
     response,
-    results,
 });

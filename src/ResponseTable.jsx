@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { clone } from 'lodash';
+import { clone, cloneDeep } from 'lodash';
 import Row from './Row';
 
 export default class ResponseTable extends Component {
@@ -7,8 +7,19 @@ export default class ResponseTable extends Component {
         super();
 
         this.handleResponse = this.handleResponse.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
+    handleSubmit() {
+        const { onSubmit, onClear, responseSet, subject, group } = this.props;
+        onSubmit({
+            subject,
+            group,
+            responseSet: clone(responseSet),
+        });
+
+        onClear();
+    }
 
     handleResponse([row, idx, response]) {
         const { responseSet, onResponseSetChange } = this.props
@@ -18,10 +29,9 @@ export default class ResponseTable extends Component {
     }
 
     render() {
-        const { responseSet, subject, group, onGroupChange, onSubjectChange,
-                onSubmit } = this.props;
+        const { responseSet, subject, group, onGroupChange, onSubjectChange } = this.props;
 
-        const rows = responseSet.map((responseLine, idx) => {
+        const rows = cloneDeep(responseSet).map((responseLine, idx) => {
             return (
                 <Row
                     responses={responseLine}
@@ -55,7 +65,7 @@ export default class ResponseTable extends Component {
                   </tbody>
                 </table>
 
-                <button onClick={onSubmit}>Submit Response</button>
+                <button onClick={this.handleSubmit}>Submit Response</button>
             </div>
         )
     }

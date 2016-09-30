@@ -23,6 +23,7 @@ class App extends Component {
                     onSubjectChange={boundActionCreators.setCurrentSubject}
                     onGroupChange={boundActionCreators.setCurrentGroup}
                     onResponseSetChange={boundActionCreators.setCurrentResponse}
+                    onClear={boundActionCreators.clearCurrentEntry}
                 />
                 <ResultsTable
                     responses={results}
@@ -38,7 +39,7 @@ function mapStateToProps(state) {
         currentResponseSet: state.response.responseSet,
         currentEntryGroup: state.response.group,
         currentEntrySubject: state.response.subject,
-        results: state.results.responseEntries,
+        results: state.response.responseEntries,
     };
 }
 

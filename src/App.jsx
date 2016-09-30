@@ -14,18 +14,22 @@ class App extends Component {
 
       return (
           <div className="App">
-              <h2>Object Score Sheet</h2>
-              <ResponseTable
-                    responseSet={currentResponseSet}
-                    group={currentEntryGroup}
-                    subject={currentEntrySubject}
-                    isEditing={isEditing}
-                    onSubmit={boundActionCreators.saveCurrentEntry}
-                    onSubjectChange={boundActionCreators.setCurrentSubject}
-                    onGroupChange={boundActionCreators.setCurrentGroup}
-                    onResponseSetChange={boundActionCreators.setCurrentResponse}
-                    onClear={boundActionCreators.clearCurrentEntry}
-                />
+              <div className="top-box">
+                  <div>
+                      <h2>Object Score Sheet</h2>
+                      <ResponseTable
+                            responseSet={currentResponseSet}
+                            group={currentEntryGroup}
+                            subject={currentEntrySubject}
+                            isEditing={isEditing}
+                            onSubmit={boundActionCreators.saveCurrentEntry}
+                            onSubjectChange={boundActionCreators.setCurrentSubject}
+                            onGroupChange={boundActionCreators.setCurrentGroup}
+                            onResponseSetChange={boundActionCreators.setCurrentResponse}
+                            onClear={boundActionCreators.clearCurrentEntry}
+                        />
+                    </div>
+                </div>
                 <hr/>
                 <ResultsTable
                     responses={results}

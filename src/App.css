@@ -25,6 +25,11 @@ select, label {
   margin: 5px;
 }
 
+.top-box {
+  display: flex;
+  justify-content: center;
+}
+
 .App-header {
   background-color: #222;
   height: 150px;

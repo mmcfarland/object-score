@@ -1,10 +1,28 @@
-.App {
-  text-align: center;
+body {
+  background-color: white;
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 80px;
+input {
+  padding: 4px;
+}
+
+span.glyphicon {
+  cursor: pointer;
+  padding: 4px;
+}
+
+button {
+  margin: 5px;
+}
+
+button.del-all {
+  float: right;
+}
+
+select, label {
+  padding: 5px;
+  margin: 5px;
 }
 
 .App-header {

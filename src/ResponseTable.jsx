@@ -29,7 +29,8 @@ export default class ResponseTable extends Component {
     }
 
     render() {
-        const { responseSet, subject, group, onGroupChange, onSubjectChange } = this.props;
+        const { responseSet, subject, group, onGroupChange, onSubjectChange,
+                onClear, isEditing } = this.props;
 
         const rows = cloneDeep(responseSet).map((responseLine, idx) => {
             return (
@@ -41,6 +42,11 @@ export default class ResponseTable extends Component {
                 />
             )
         });
+
+        const saveText = isEditing ? 'Update Response' : 'Submit Response';
+        const cancel = isEditing
+            ? <button onClick={onClear} className="btn btn-raised btn-warning">Cancel Edit</button>
+            : null;
 
         return (
             <div>
@@ -55,8 +61,8 @@ export default class ResponseTable extends Component {
                 <select onChange={onGroupChange} value={group}>
                     <option value="X">Select One</option>
                     <option value="AD">AD</option>
-                    <option value="VD">VD</option>
-                    <option value="H">H</option>
+                    <option value="VD">VAD</option>
+                    <option value="H">HC</option>
                 </select>
 
                 <table className="response">
@@ -65,7 +71,8 @@ export default class ResponseTable extends Component {
                   </tbody>
                 </table>
 
-                <button onClick={this.handleSubmit}>Submit Response</button>
+                <button onClick={this.handleSubmit} className="btn btn-raised btn-info">{saveText}</button>
+                {cancel}
             </div>
         )
     }

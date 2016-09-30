@@ -19,7 +19,6 @@ const initResponseState = {
     ],
     responseEntries: savedResponses || [],
     isEditing: false,
-    editingIdx: -1,
 };
 
 export function response(state = cloneDeep(initResponseState), action) {
@@ -54,6 +53,7 @@ export function response(state = cloneDeep(initResponseState), action) {
                 group: empty.group,
                 subject: empty.subject,
                 responseSet: empty.responseSet,
+                isEditing: false,
             });
         case SET_CURRENT_ENTRY:
             const editingEntry = cloneDeep(state.responseEntries[action.idx]);

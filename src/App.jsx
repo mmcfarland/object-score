@@ -10,7 +10,7 @@ import ResultsTable from './ResultsTable';
 class App extends Component {
   render() {
       const { currentResponseSet, currentEntrySubject, currentEntryGroup,
-              results, boundActionCreators } = this.props;
+              results, isEditing, boundActionCreators } = this.props;
 
       return (
           <div className="App">
@@ -19,12 +19,14 @@ class App extends Component {
                     responseSet={currentResponseSet}
                     group={currentEntryGroup}
                     subject={currentEntrySubject}
+                    isEditing={isEditing}
                     onSubmit={boundActionCreators.saveCurrentEntry}
                     onSubjectChange={boundActionCreators.setCurrentSubject}
                     onGroupChange={boundActionCreators.setCurrentGroup}
                     onResponseSetChange={boundActionCreators.setCurrentResponse}
                     onClear={boundActionCreators.clearCurrentEntry}
                 />
+                <hr/>
                 <ResultsTable
                     responses={results}
                     onSelect={boundActionCreators.setCurrentEntry}
@@ -40,6 +42,7 @@ function mapStateToProps(state) {
         currentEntryGroup: state.response.group,
         currentEntrySubject: state.response.subject,
         results: state.response.responseEntries,
+        isEditing: state.response.isEditing,
     };
 }
 

@@ -38,16 +38,18 @@ export default class ResultsTable extends Component {
 
     render() {
         let varHeaders = [];
-        const results = this.props.responses.map((response, idx) => {
+        const { responses, isEditing, editingIdx } = this.props;
+        const results = responses.map((response, idx) => {
             const variables = new Score(response.responseSet).asVariables();
             const cols = Object.keys(variables);
             if (!varHeaders.length) {
                  varHeaders = this.renderHeaders(cols.sort());
             }
             const rows = this.renderRows(cols, variables, idx);
-
+            const rowClass = (isEditing && idx === editingIdx) ? 'info' : '';
             return (
-                <tr key={response.subject}>
+
+                <tr key={response.subject} className={rowClass}>
                     <td>
                         <span className="glyphicon glyphicon-remove"
                             onClick={this.onDelete(idx)}

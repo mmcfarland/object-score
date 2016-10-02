@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import Papa from 'papaparse';
+import download from 'downloadjs';
 import Score from './Score';
 
 export default class ResultsTable extends Component {
@@ -8,6 +10,7 @@ export default class ResultsTable extends Component {
         this.onClick = this.onClick.bind(this);
         this.onDelete = this.onDelete.bind(this);
         this.onClear = this.onClear.bind(this);
+        this.onDownload = this.onDownload.bind(this);
     }
 
     onClick(idx) {
@@ -26,6 +29,15 @@ export default class ResultsTable extends Component {
         if (confirm('This will permanantly delete all saved responses, are you sure you want to continue?')) {
             this.props.onClear();
         }
+    }
+
+    onDownload() {
+        const data = this.props.responses.map(response => {
+            const variables = new Score(response.responseSet).asVariables();
+            return Object.assign({}, response, variables);
+        });
+        const csv = Papa.unparse(data);
+        download(csv, 'object_score.csv', 'text/csv');
     }
 
     renderRows(cols, variables, idx) {
@@ -72,7 +84,9 @@ export default class ResultsTable extends Component {
                 <div className="panel-heading">
                     <button
                         className="pull-right btn btn-raised btn-info"
-                        title="Download As CSV">Download</button>
+                        title="Download As CSV"
+                        onClick={this.onDownload}>Download
+                    </button>
                     <button
                         className="pull-right btn btn-raised btn-info"
                         title="This will delete ALL saved responses"

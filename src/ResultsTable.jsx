@@ -17,10 +17,24 @@ export default class ResultsTable extends Component {
         return () => this.props.onRemove(idx);
     }
 
+    renderRows(cols, variables, idx) {
+        return cols.map(col => <td key={`${col}-${idx}`}>{variables[col]}</td>);
+    }
+
+    renderHeaders(cols) {
+        return cols.map(col => <th key={col}>{col}</th>);
+    }
+
     render() {
+        let varHeaders = [];
         const results = this.props.responses.map((response, idx) => {
-            const score = new Score(response.responseSet).asVariables();
-            console.log(score);
+            const variables = new Score(response.responseSet).asVariables();
+            const cols = Object.keys(variables);
+            if (!varHeaders.length) {
+                 varHeaders = this.renderHeaders(cols.sort());
+            }
+            const rows = this.renderRows(cols, variables, idx);
+
             return (
                 <tr key={response.subject}>
                     <td>
@@ -35,7 +49,7 @@ export default class ResultsTable extends Component {
                     </td>
                     <td>{response.subject}</td>
                     <td>{response.group}</td>
-                    <td></td>
+                    {rows}
                 </tr>
             );
         });
@@ -56,7 +70,7 @@ export default class ResultsTable extends Component {
                                 <th>Actions</th>
                                 <th>Subject</th>
                                 <th>Group</th>
-                                <th>SPSS</th>
+                                {varHeaders}
                             </tr>
                         </thead>
                         <tbody>

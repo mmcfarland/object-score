@@ -13,19 +13,45 @@ const correct = [
     [ 6,   1,  4, 10],
 ]
 
-
-const EXTRA = 4
+const SERIAL_POSITIONS = 4;
+const BLANK = 99;
+const INTRUDE = 16;
 
 export default class Score {
-    constructor(responseSet) {
+    constructor(responseSet, expected = correct) {
         this.responseSet = responseSet;
+        this.expectedSet = expected;
+    }
+
+    // Get the total number of positions in `correct`
+    numAnswers() {
+        return this.expectedSet.reduce((cnt, row) => row.length + cnt, 0);
+    }
+
+    correctResponses() {
+        // Produce a matrix of correct values, marked by 1. Extra values at the end
+        // of a response sequence are discarded
+        return this.expectedSet.map((row, rowIdx) => {
+            return row.map((answer, cellIdx) => {
+                return answer === this.responseSet[rowIdx][cellIdx] ? 1 : 0;
+            });
+        });
+    }
+
+    extraneousCount() {
+        // Return the number of responses given, in total, which exceed the
+        // count for a response row.  ie, is the last row BLANK or not?
+        return this.responseSet.reduce((cnt, row) => {
+            const extra = row[row.length - 1] === BLANK ? 0 : 1;
+            return cnt + extra;
+        }, 0);
     }
 
     betweenTrial() {
-        const errors = [99, 16]
+        const extras = [BLANK, INTRUDE]
 
         return this.responseSet.map((row, rowIdx) => {
-            const acceptable = correct[rowIdx].concat(errors);
+            const acceptable = this.expectedSet[rowIdx].concat(extras);
             return row.map(response =>
                 acceptable.includes(response) ? 0 : 1
             )
@@ -37,15 +63,15 @@ export default class Score {
         // in the results
         return this.responseSet.map((responseRow, rowIdx) =>
             responseRow
-                .map(response => response === 99 ? 1 : 0)
-                .slice(0, EXTRA)
+                .map(response => response === BLANK ? 1 : 0)
+                .slice(0, SERIAL_POSITIONS)
         );
     }
 
     intrusion() {
         return this.responseSet.map((responseRow, rowIdx) =>
             responseRow
-                .map(response => response === 16 ? 1 : 0)
+                .map(response => response === INTRUDE ? 1 : 0)
         );
     }
 
@@ -64,7 +90,7 @@ export default class Score {
     positionalSwap(mode) {
         return this.responseSet.map((responseRow, rowIdx) =>
             responseRow.map((response, cellIdx) => {
-                const correctRow = correct[rowIdx];
+                const correctRow = this.expectedSet[rowIdx];
                 if (response !== correctRow[cellIdx]) {
                     const included = correctRow.includes(response);
                     const prior = responseRow.slice(0, cellIdx).includes(response);
@@ -88,7 +114,7 @@ export default class Score {
             errorRow.map((error, cellIdx) => {
                 if (error) {
                     const respValue = this.responseSet[rowIdx][cellIdx];
-                    const correctRespIdx = correct[rowIdx].indexOf(respValue);
+                    const correctRespIdx = this.expectedSet[rowIdx].indexOf(respValue);
                     return cellIdx - correctRespIdx;
                 }
                 return 0;
@@ -96,35 +122,75 @@ export default class Score {
         );
     }
 
+    totalProportions(types, results) {
+        const tp = {};
+        const total = this.numAnswers();
+        const totalPlus = this.numAnswers() + this.extraneousCount();
+
+        types.forEach(type => {
+            const totalDenom = type === 'correct' ? totalPlus : total;
+            tp[`total_prop_${type}`] = results[type].sum / totalDenom;
+        });
+        return tp;
+    }
+
+    serialPositionProportions(types, results) {
+        const spp = {};
+        const total = this.numAnswers();
+
+        types.forEach(type => {
+            let pos = 0;
+            while (pos < SERIAL_POSITIONS) {
+                const prop = results[type].counts[pos] / total;
+                spp[`sp${pos+1}_prop_${type}`] = prop;
+                pos++;
+            }
+        });
+        return spp;
+    }
+
     asVariables() {
+        const right = this.correctResponses();
         const bt = this.betweenTrial();
         const om = this.omission();
         const intr = this.intrusion();
         const within = this.withinTrial();
         const transpo = this.transposition();
+        const transpoGradient = this.transpositionGradient();
 
-        return {
-            between: {
+        // TODO: transpo grad prop (count at displacement / sum(transpo)
+        const results = {
+            correct: {
+                sum: matrixSum(right),
+                counts: matrixSumByCol(right)
+            },
+            btr: {
                 sum: matrixSum(bt),
                 counts: matrixSumByCol(bt)
             },
-            omission: {
+            om: {
                 sum: matrixSum(om),
                 counts: matrixSumByCol(om)
             },
-            intrusion: {
+            int: {
                 sum: matrixSum(intr),
                 counts: matrixSumByCol(intr)
             },
-            within: {
+            wtr: {
                 sum: matrixSum(within),
                 counts: matrixSumByCol(within)
             },
-            transposition: {
+            trans: {
                 sum: matrixSum(transpo),
                 counts: matrixSumByCol(transpo)
             },
-            transpositionGradiants: frequencyCount(transpo)
+            transpositionGradients: frequencyCount(transpoGradient)
         };
+
+        const measures = ['correct', 'om', 'int', 'btr', 'wtr', 'trans'];
+        return Object.assign({},
+            this.totalProportions(measures, results),
+            this.serialPositionProportions(measures, results)
+        );
     }
 }

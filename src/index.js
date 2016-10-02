@@ -17,7 +17,12 @@ import 'bootstrap-material-design/dist/js/material';
 jQuery.material.init();
 */
 
-const storeMaker = applyMiddleware(createLogger())(createStore);
+const middleware = []
+if (process.env.NODE_ENV === 'development') {
+    middleware.push(createLogger());
+}
+
+const storeMaker = applyMiddleware(...middleware)(createStore);
 const store = storeMaker(mainReducer);
 
 ReactDOM.render(

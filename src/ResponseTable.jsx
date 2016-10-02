@@ -12,13 +12,20 @@ export default class ResponseTable extends Component {
 
     handleSubmit() {
         const { onSubmit, onClear, responseSet, subject, group } = this.props;
-        onSubmit({
-            subject,
-            group,
-            responseSet: clone(responseSet),
-        });
+        if (!subject.trim()) {
+            alert('Please enter a Subject Id');
+        } else if (group === 'X') {
+            alert('Please select a Group value');
+        } else {
 
-        onClear();
+            onSubmit({
+                subject,
+                group,
+                responseSet: clone(responseSet),
+            });
+
+            onClear();
+        }
     }
 
     handleResponse([row, idx, response]) {

@@ -7,6 +7,7 @@ export default class ResultsTable extends Component {
 
         this.onClick = this.onClick.bind(this);
         this.onDelete = this.onDelete.bind(this);
+        this.onClear = this.onClear.bind(this);
     }
 
     onClick(idx) {
@@ -14,7 +15,17 @@ export default class ResultsTable extends Component {
     }
 
     onDelete(idx) {
-        return () => this.props.onRemove(idx);
+        return () => {
+            if (confirm('Are you sure you want to delete this record?')) {
+                this.props.onDelete(idx);
+            }
+        };
+    }
+
+    onClear() {
+        if (confirm('This will permanantly delete all saved responses, are you sure you want to continue?')) {
+            this.props.onClear();
+        }
     }
 
     renderRows(cols, variables, idx) {
@@ -57,10 +68,13 @@ export default class ResultsTable extends Component {
         return (
             <div className="panel panel-default">
                 <div className="panel-heading">
-                    <button className="pull-right btn btn-raised btn-info"
+                    <button
+                        className="pull-right btn btn-raised btn-info"
                         title="Download As CSV">Download</button>
-                    <button className="pull-right btn btn-raised btn-info"
-                        title="This will delete ALL saved responses">Clear All</button>
+                    <button
+                        className="pull-right btn btn-raised btn-info"
+                        title="This will delete ALL saved responses"
+                        onClick={this.onClear}>Clear All</button>
                     <h4>Saved Results</h4>
                 </div>
                 <div className="panel-body">

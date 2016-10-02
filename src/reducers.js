@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux';
 import { cloneDeep } from 'lodash';
 import { SET_CURRENT_RESPONSE, CLEAR_CURRENT_ENTRY, SET_CURRENT_ENTRY,
-         SET_CURRENT_SUBJECT, SET_CURRENT_GROUP, SAVE_CURRENT_ENTRY }
-       from './actions.js';
+         SET_CURRENT_SUBJECT, SET_CURRENT_GROUP, SAVE_CURRENT_ENTRY,
+         CLEAR_ALL_RESPONSES, DELETE_RESPONSE } from './actions.js';
 
 const savedResponses = JSON.parse(localStorage.getItem('responses'));
 const initResponseState = {
@@ -42,6 +42,8 @@ export function response(state = cloneDeep(initResponseState), action) {
             } else {
                 existingEntries.push(action.entry);
             }
+            // Also persist this set in storage
+            localStorage.setItem('responses', JSON.stringify(existingEntries));
 
             return Object.assign({}, state, {
                 responseEntries: existingEntries,
@@ -49,6 +51,7 @@ export function response(state = cloneDeep(initResponseState), action) {
             });
         case CLEAR_CURRENT_ENTRY:
             const empty = cloneDeep(initResponseState);
+
             return Object.assign({}, state, {
                 group: empty.group,
                 subject: empty.subject,
@@ -64,6 +67,20 @@ export function response(state = cloneDeep(initResponseState), action) {
                 responseSet: editingEntry.responseSet,
                 isEditing: true,
                 editingIdx: action.idx,
+            });
+        case CLEAR_ALL_RESPONSES:
+            localStorage.removeItem('responses');
+
+            return Object.assign({}, state, {
+                responseEntries: [],
+            });
+        case DELETE_RESPONSE:
+            const responses = cloneDeep(state.responseEntries);
+            responses.splice(action.idx, 1);
+            localStorage.setItem('responses', JSON.stringify(responses));
+
+            return Object.assign({}, state, {
+                responseEntries: responses,
             });
         default:
             return state;

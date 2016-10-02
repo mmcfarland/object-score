@@ -34,6 +34,8 @@ class App extends Component {
                 <ResultsTable
                     responses={results}
                     onSelect={boundActionCreators.setCurrentEntry}
+                    onDelete={boundActionCreators.deleteResponse}
+                    onClear={boundActionCreators.clearAllResponses}
                 />
           </div>
     );

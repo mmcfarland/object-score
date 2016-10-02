@@ -236,3 +236,27 @@ it('computes serial position proportions', () => {
     const actual = score.serialPositionProportions(types, input);
     expect(actual).toEqual(expected);
 });
+
+it('computes transposition gradient proportions', () => {
+    const total = 10;
+    const gradients = {
+        '-3': 2,
+        '-2': 0,
+        '-1': 2,
+         '0': 4,
+         '1': 1,
+         '2': 1,
+         '3': 0,
+    };
+
+    const score = new Score().gradientProportions(total, gradients);
+    expect(score).toEqual({
+        'prop_trans_neg3': 2/total,
+        'prop_trans_neg2': 0/total,
+        'prop_trans_neg1': 2/total,
+        'prop_trans_0': 4/total,
+        'prop_trans_1': 1/total,
+        'prop_trans_2': 1/total,
+        'prop_trans_3': 0/total,
+    });
+});

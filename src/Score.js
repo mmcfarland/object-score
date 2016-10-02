@@ -149,6 +149,21 @@ export default class Score {
         return spp;
     }
 
+    gradientProportions(transpoCount, gradients) {
+        // The proportion of each gradient position over all transposition errors
+        const keys = Object.keys(gradients)
+        const gp = {};
+
+        keys.forEach(key => {
+            const prefix = key[0] === '-' ? 'neg' : '';
+            // Prevent divide by zero
+            const value = transpoCount === 0 ? 0 : gradients[key] / transpoCount;
+            gp[`prop_trans_${prefix + Math.abs(key)}`] = value;
+        });
+
+        return gp;
+    }
+
     asVariables() {
         const right = this.correctResponses();
         const bt = this.betweenTrial();
@@ -158,7 +173,6 @@ export default class Score {
         const transpo = this.transposition();
         const transpoGradient = this.transpositionGradient();
 
-        // TODO: transpo grad prop (count at displacement / sum(transpo)
         const results = {
             correct: {
                 sum: matrixSum(right),
@@ -190,7 +204,8 @@ export default class Score {
         const measures = ['correct', 'om', 'int', 'btr', 'wtr', 'trans'];
         return Object.assign({},
             this.totalProportions(measures, results),
-            this.serialPositionProportions(measures, results)
+            this.serialPositionProportions(measures, results),
+            this.gradientProportions(results.trans.sum, results.transpositionGradients),
         );
     }
 }

@@ -6,6 +6,7 @@ import './App.css';
 import * as actionCreators from './actions';
 import ResponseTable from './ResponseTable';
 import ResultsTable from './ResultsTable';
+import legend from './legend.jpg';
 
 class App extends Component {
   render() {
@@ -15,6 +16,7 @@ class App extends Component {
       return (
           <div className="App">
               <div className="top-box">
+                  <img className="legend" src={legend} role="presentation"/>
                   <div>
                       <h2>Object Score Sheet</h2>
                       <ResponseTable

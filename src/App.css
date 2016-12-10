@@ -14,8 +14,7 @@ span.glyphicon {
 
 button {
   margin: 5px;
-}
-
+} 
 button.del-all {
   float: right;
 }
@@ -39,6 +38,10 @@ select, label {
 
 .App-intro {
   font-size: large;
+}
+
+img.legend {
+  padding-right: 100px;
 }
 
 @keyframes App-logo-spin {
